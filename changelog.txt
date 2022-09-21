@@ -4,3 +4,4 @@
 0.0dev4  2022-09-21: Verbose mode implemented
 0.0dev5  2022-09-21: Usage menu created
 0.0dev6  2022-09-21: Improved help, first recipe parsing code
+0.0dev7  2022-09-21: Initial doc

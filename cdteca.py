@@ -2,7 +2,7 @@
 from yaml import safe_load
 import os.path, getopt, sys, inspect
 
-version = "0.0dev6"
+version = "0.0dev7"
 confile = os.path.dirname(__file__) + "/config.yaml"
 internal_path = os.path.dirname(__file__)
 verbose = False
@@ -14,6 +14,10 @@ httpd = 8020
 distros = []
 
 def usage():
+    """
+    Prints the usage menu.
+    """
+
     print("     cdteca " + version)
     print('Usage: {} [options]\n'.format(os.path.basename(__file__)))
     print('Options:')
@@ -30,6 +34,9 @@ def usage():
         print("{:>10} | {:<18} {}".format(ms, mx, md))
 
 def vprint(msg):
+    """
+    Print for verbose mode (only if verbose is on).
+    """
     if verbose:
         cal = inspect.stack()[1][3]
         sys.stdout.write("\033[0;36m")
@@ -38,6 +45,9 @@ def vprint(msg):
         print(msg)
 
 def update_distro(distro):
+    """
+    Update a single distro based on distro's recipe.
+    """
     distfile = internal_path + "/recipes/" + distro + ".distro"
     vprint("Starting checking for {} for distro {}.".format(distfile, distro))
     if os.path.exists(distfile):
@@ -48,6 +58,9 @@ def update_distro(distro):
         print("No recipe found for distro {}.".format(distro))
 
 def update_distros():
+    """
+    Update all distros on internal list.
+    """
     for d in distros:
         update_distro(d)
 
