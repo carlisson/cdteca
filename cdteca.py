@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 from yaml import safe_load
 from urllib.request import urlretrieve
-import os.path, getopt, sys, inspect, requests, re
+import os.path, getopt, sys, inspect, requests, re, hashlib
 
-version = "0.0dev8"
+version = "0.0dev9"
 confile = os.path.dirname(__file__) + "/config.yaml"
 internal_path = os.path.dirname(__file__)
 verbose = False
@@ -45,6 +45,18 @@ def vprint(msg):
         sys.stdout.write("\033[0;0m")
         print(msg)
 
+def check_sum(file, type):
+    """
+    Checksum for downloaded file, using different algorithms.
+    """
+    if os.path.exists(file):
+        if type == "sha512sum":
+            hasha = hashlib.sha512()
+            hasha.update( open(file, 'rb').read())
+            return hasha.hexdigest()
+    else:
+        print("File {} do not exists!".format(file))
+
 def update_distro(distro):
     """
     Update a single distro based on distro's recipe.
@@ -70,9 +82,18 @@ def update_distro(distro):
                         print("Distro {} is up to date: {}".format(distro, isobase))
                     else:
                         vprint("Starting download of iso for {} distro. Wait, it can take time...".format(distro))
+                        
                         urlretrieve(isourl, isotemp)
-                        vprint("Download complete. Renaming file.")
-                        os.rename(isotemp, isofile)
+                        vprint("Download complete.")
+
+                        res = requests.get(dconf['checksum'])
+                        remsum = [m.group(1) for m in re.finditer("(.*)" + isobase, res.text)][0].strip()
+                        if check_sum(isotemp, dconf['method']) == remsum:
+                            vprint("Checksum validated. All is fine!")
+                            os.rename(isotemp, isofile)
+                        else:
+                            print("Checksum don't match. Aborting...")
+                            os.remove(isotemp)
                 else:
                     print('Requesting {} results in {} status.'.format(dconf['url'], res.status_code))
     else:

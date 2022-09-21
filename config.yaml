@@ -5,6 +5,7 @@ ftp-ports:
   - 2020
   - 2120
 http-port: 8020
+retains: 0
 distros:
   - debian
   - fedora
