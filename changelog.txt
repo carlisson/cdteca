@@ -5,3 +5,4 @@
 0.0dev5  2022-09-21: Usage menu created
 0.0dev6  2022-09-21: Improved help, first recipe parsing code
 0.0dev7  2022-09-21: Initial doc
+0.0dev8  2022-09-21: Download (debian) working

@@ -1,8 +1,9 @@
 #!/usr/bin/python3
 from yaml import safe_load
-import os.path, getopt, sys, inspect
+from urllib.request import urlretrieve
+import os.path, getopt, sys, inspect, requests, re
 
-version = "0.0dev7"
+version = "0.0dev8"
 confile = os.path.dirname(__file__) + "/config.yaml"
 internal_path = os.path.dirname(__file__)
 verbose = False
@@ -48,12 +49,32 @@ def update_distro(distro):
     """
     Update a single distro based on distro's recipe.
     """
+    
+    os.makedirs(path, exist_ok=True)
+    """ mkdir -p """
+
     distfile = internal_path + "/recipes/" + distro + ".distro"
     vprint("Starting checking for {} for distro {}.".format(distfile, distro))
     if os.path.exists(distfile):
         vprint("Loading {} distro recipe.".format(distro))
         with open(distfile) as file:
             dconf = safe_load(file)
+            if "url" in dconf and "isoregex" in dconf:
+                res = requests.get(dconf['url'])
+                if res.status_code == 200:
+                    isourl = [m.group(2) for m in re.finditer("(.*)(" + dconf['isoregex'] + ")\"(.*)", res.text)][0]
+                    isobase = os.path.basename(isourl)
+                    isofile = path + '/' + isobase
+                    isotemp = isofile + '-partial'
+                    if os.path.exists(isofile):
+                        print("Distro {} is up to date: {}".format(distro, isobase))
+                    else:
+                        vprint("Starting download of iso for {} distro. Wait, it can take time...".format(distro))
+                        urlretrieve(isourl, isotemp)
+                        vprint("Download complete. Renaming file.")
+                        os.rename(isotemp, isofile)
+                else:
+                    print('Requesting {} results in {} status.'.format(dconf['url'], res.status_code))
     else:
         print("No recipe found for distro {}.".format(distro))
 
@@ -96,6 +117,8 @@ def main():
         usage()
         sys.exit(2)
 
+    vprint("called with arguments: " + str(opts))
+
     for o, a in opts:
         vprint("o=" + o + ", a=" + a)
         if o in ("-v", "--verbose"):
@@ -109,7 +132,6 @@ def main():
         elif o in ("-d", "--distro"):
             update_distro(a)
     
-    vprint("called with arguments: " + str(opts))
 
 if __name__ == "__main__":
     main()
