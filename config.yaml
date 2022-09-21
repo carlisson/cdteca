@@ -4,6 +4,8 @@ verbose: False
 ftp-ports:
   - 2020
   - 2120
+ftp-user: ftpd
+ftp-password: ftpass
 http-port: 8020
 retains: 0
 distros:

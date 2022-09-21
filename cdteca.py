@@ -1,16 +1,25 @@
 #!/usr/bin/python3
 from yaml import safe_load
 from urllib.request import urlretrieve
+
+from pyftpdlib.authorizers import DummyAuthorizer
+from pyftpdlib.handlers import FTPHandler
+from pyftpdlib.servers import FTPServer
+
 import os.path, getopt, sys, inspect, requests, re, hashlib
 
-version = "0.0dev9"
+version = "0.0dev10"
 confile = os.path.dirname(__file__) + "/config.yaml"
 internal_path = os.path.dirname(__file__)
 verbose = False
 title = "My Cdteca"
 path = internal_path + "/data"
-ftpc = 2020
-ftpd = 2120
+ftp = {
+    'com': 2020,
+    'data': 2120,
+    'user': "cdteca",
+    'password': "cdteca"
+}
 httpd = 8020
 distros = []
 
@@ -29,6 +38,7 @@ def usage():
         ['-f', '--stop', 'finish/stop servers'],
         ['-u', '--update', 'update all distributions'],
         ['-d<name>', '--distro=<name>', 'update a single distro'],
+        ['-l', '--list', 'list all supported distros'],
         ['-v', '--verbose', 'enable verbose mode']
     ]
     for ms, mx, md in menu:
@@ -106,6 +116,32 @@ def update_distros():
     for d in distros:
         update_distro(d)
 
+def ftpd():
+    """
+    FTP server.
+    """
+    authorizer = DummyAuthorizer()
+
+    # Define a new user having full r/w permissions.
+    authorizer.add_user(ftp['user'], ftp['password'], path, perm='elradfmw')
+
+    handler = FTPHandler
+    handler.authorizer = authorizer
+
+    # Define a customized banner (string returned when client connects)
+    handler.banner = "Cdteca {} ftp, powered by pyftpdlib, ready."
+
+    # Optionally specify range of ports to use for passive connections.
+    #handler.passive_ports = range(60000, 65535)
+
+    address = ('', ftp['com'])
+    server = FTPServer(address, handler)
+
+    server.max_cons = 256
+    server.max_cons_per_ip = 5
+
+    server.serve_forever()
+
 def main():
     global verbose, title, path, ftpc, ftpd, httpd, distros
 
@@ -118,8 +154,12 @@ def main():
             if "path" in cdconf:
                 path = cdconf['path']
             if "ftp-ports" in cdconf:
-                ftpc = cdconf['ftp-ports'][0]
-                ftpd = cdconf['ftp-ports'][1]
+                ftp['com'] = cdconf['ftp-ports'][0]
+                ftp['data'] = cdconf['ftp-ports'][1]
+                if "ftp-user" in cdconf:
+                    ftp['user'] = cdconf['ftp-user']
+                if "ftp-password" in cdconf:
+                    ftp['password'] = cdconf['ftp-password']
             if "http-port" in cdconf:
                 httpd = cdconf['http-port']
             if "distros" in cdconf:
@@ -132,7 +172,7 @@ def main():
         sys.exit(1)
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hsifud:v", ["help", "status", "start", "stop", "update", "distro", "verbose"] )
+        opts, args = getopt.getopt(sys.argv[1:], "hsifud:vl", ["help", "status", "start", "stop", "update", "distro", "verbose", "list"] )
     except getopt.GetoptError as err:
         print(err)
         usage()
@@ -152,6 +192,8 @@ def main():
             update_distros()
         elif o in ("-d", "--distro"):
             update_distro(a)
+        elif o in ('-i', '--start'):
+            ftpd()
     
 
 if __name__ == "__main__":
