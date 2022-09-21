@@ -2,3 +2,4 @@
 0.0dev2  2022-09-21: Fisrt steps to load config.yaml file
 0.0dev3  2022-09-21: Getopts included
 0.0dev4  2022-09-21: Verbose mode implemented
+0.0dev5  2022-09-21: Usage menu created

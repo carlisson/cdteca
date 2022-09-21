@@ -2,7 +2,7 @@
 from yaml import safe_load
 import os.path, getopt, sys, inspect
 
-version = "0.0dev4"
+version = "0.0dev5"
 confile = os.path.dirname(__file__) + "/config.yaml"
 verbose = False
 title = "My Cdteca"
@@ -13,7 +13,19 @@ httpd = 8020
 distros = []
 
 def usage():
-    print("Usage instructions.")
+    print("     cdteca " + version)
+    print('Usage: {} [options]\n'.format(os.path.basename(__file__)))
+    print('Options:')
+    menu = {
+        '-h | --help': 'show this usage info',
+        '-s | --status': 'show status of internal servers',
+        '-i | --start': 'init/start servers',
+        '-f | --stop': 'finish/stop servers',
+        '-u | --update': 'update all distributions',
+        '-v | --verbose': 'enable verbose mode'
+    }
+    for mk in menu:
+        print("{:<15} {}".format(mk, menu[mk]))
 
 def vprint(msg):
     if verbose:
@@ -45,7 +57,7 @@ def main():
                 verbose = cdconf['verbose']
                 vprint('Verbose enabled by conf file')
     else:
-        print("Configuration file " + confile + " not found.")
+        print("Configuration file {} not found.".format(confile))
         sys.exit(1)
 
     try:
