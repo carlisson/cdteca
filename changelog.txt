@@ -9,3 +9,4 @@
 0.0dev9  2022-09-21: Checksum validating... (sha512sum)
 0.0dev10 2022-09-21: Internal FTP server
 0.0dev11 2022-09-21: Create a checksum file
+0.0dev12 2022-09-21: index.html created (no style)

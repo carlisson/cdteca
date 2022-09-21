@@ -8,7 +8,7 @@ from pyftpdlib.servers import FTPServer
 
 import os.path, getopt, sys, inspect, requests, re, hashlib
 
-version = "0.0dev11"
+version = "0.0dev12"
 confile = os.path.dirname(__file__) + "/config.yaml"
 internal_path = os.path.dirname(__file__)
 verbose = False
@@ -137,9 +137,22 @@ def build_checksums():
             checkfile.write(hasha.hexdigest() + " " + fn)
     checkfile.close()
 
-
 def build_index():
-    return
+    """
+    Create an HTML linking the files.
+    """
+
+    chklink = "<a href='{}.txt'>Checksum</a>".format(checksum_method)
+
+    htfile = open(path + "/index.html" , "w")
+    htfile.write("<html><head><title>{}</title></head>".format(title))
+    htfile.write("<body><h1>{}</h1><div class='note'>{}</div>".format(title, chklink))
+    htfile.write("<ul>")
+    for fn in os.listdir(path):
+        if fn.endswith(".iso"):
+            htfile.write("<li><a href='{}'>{}</a></li>".format(fn, fn))
+    htfile.write("</ul></body></html>")
+    htfile.close()    
 
 def ftpd():
     """
