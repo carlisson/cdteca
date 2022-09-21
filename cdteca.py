@@ -8,12 +8,13 @@ from pyftpdlib.servers import FTPServer
 
 import os.path, getopt, sys, inspect, requests, re, hashlib
 
-version = "0.0dev10"
+version = "0.0dev11"
 confile = os.path.dirname(__file__) + "/config.yaml"
 internal_path = os.path.dirname(__file__)
 verbose = False
 title = "My Cdteca"
 path = internal_path + "/data"
+checksum_method = "md5"
 ftp = {
     'com': 2020,
     'data': 2120,
@@ -60,7 +61,7 @@ def check_sum(file, type):
     Checksum for downloaded file, using different algorithms.
     """
     if os.path.exists(file):
-        if type == "sha512sum":
+        if type == "sha512":
             hasha = hashlib.sha512()
             hasha.update( open(file, 'rb').read())
             return hasha.hexdigest()
@@ -115,6 +116,30 @@ def update_distros():
     """
     for d in distros:
         update_distro(d)
+    
+    build_checksums()
+    build_index()
+
+def build_checksums():
+    """
+    Create or update a checksum file.
+    """
+
+    vprint("Initializing checksum file creation. Method: {}.".format(checksum_method))
+
+    checkfile = open(path + "/" + checksum_method + ".txt" , "w")
+
+    for fn in os.listdir(path):
+        if fn.endswith(".iso"):
+            if checksum_method == "sha512":
+                hasha = hashlib.sha512()
+            hasha.update( open(path + '/' + fn, 'rb').read())
+            checkfile.write(hasha.hexdigest() + " " + fn)
+    checkfile.close()
+
+
+def build_index():
+    return
 
 def ftpd():
     """
@@ -143,12 +168,11 @@ def ftpd():
     server.serve_forever()
 
 def main():
-    global verbose, title, path, ftpc, ftpd, httpd, distros
+    global verbose, title, path, ftpc, ftpd, httpd, distros, checksum_method
 
     if os.path.exists(confile):
         with open(confile, 'r') as file:
             cdconf = safe_load(file)
-            vprint("Loaded: " + str(cdconf))
             if "title" in cdconf:
                 title = cdconf['title']
             if "path" in cdconf:
@@ -164,9 +188,11 @@ def main():
                 httpd = cdconf['http-port']
             if "distros" in cdconf:
                 distros = cdconf['distros']
+            if "checksum-method" in cdconf:
+                checksum_method = cdconf["checksum-method"]
             if "verbose" in cdconf:                
                 verbose = cdconf['verbose']
-                vprint('Verbose enabled by conf file')
+                vprint("Loaded: " + str(cdconf))
     else:
         print("Configuration file {} not found.".format(confile))
         sys.exit(1)
