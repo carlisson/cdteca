@@ -1,0 +1,10 @@
+title: "CDteca"
+path: "/home/dados/cdteca"
+ftp-ports:
+  - 2020
+  - 2120
+http-port: 8020
+distros:
+  - debian
+  - fedora
+  - ubuntu
