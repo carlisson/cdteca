@@ -1,5 +1,6 @@
-title: "CDteca"
+title: "CDteca from Configuration"
 path: "/home/dados/cdteca"
+verbose: True
 ftp-ports:
   - 2020
   - 2120
