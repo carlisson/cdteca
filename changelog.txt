@@ -1,2 +1,3 @@
 0.0dev1  2022-09-21: Initial code. First version of config.yaml
 0.0dev2  2022-09-21: Fisrt steps to load config.yaml file
+0.0dev3  2022-09-21: Getopts included
