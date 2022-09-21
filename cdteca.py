@@ -8,7 +8,7 @@ from pyftpdlib.servers import FTPServer
 
 import os.path, getopt, sys, inspect, requests, re, hashlib
 
-version = "0.0dev12"
+version = "0.0dev13"
 confile = os.path.dirname(__file__) + "/config.yaml"
 internal_path = os.path.dirname(__file__)
 verbose = False
@@ -34,10 +34,8 @@ def usage():
     print('Options:')
     menu = [
         ['-h', '--help', 'show this usage info'],
-        ['-s', '--status', 'show status of internal servers'],
-        ['-i', '--start', 'init/start servers'],
-        ['-f', '--stop', 'finish/stop servers'],
         ['-u', '--update', 'update all distributions'],
+        ['-D', '--daemon', 'Start FTP service'],
         ['-d<name>', '--distro=<name>', 'update a single distro'],
         ['-l', '--list', 'list all supported distros'],
         ['-v', '--verbose', 'enable verbose mode']
@@ -211,7 +209,7 @@ def main():
         sys.exit(1)
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hsifud:vl", ["help", "status", "start", "stop", "update", "distro", "verbose", "list"] )
+        opts, args = getopt.getopt(sys.argv[1:], "huDd:vl", ["help", "update", "daemon", "distro", "verbose", "list"] )
     except getopt.GetoptError as err:
         print(err)
         usage()
@@ -231,7 +229,7 @@ def main():
             update_distros()
         elif o in ("-d", "--distro"):
             update_distro(a)
-        elif o in ('-i', '--start'):
+        elif o in ('-D', '--daemon'):
             ftpd()
     
 
