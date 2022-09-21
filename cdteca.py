@@ -2,11 +2,12 @@
 from yaml import safe_load
 import os.path, getopt, sys, inspect
 
-version = "0.0dev5"
+version = "0.0dev6"
 confile = os.path.dirname(__file__) + "/config.yaml"
+internal_path = os.path.dirname(__file__)
 verbose = False
 title = "My Cdteca"
-path = os.path.dirname(__file__) + "/data"
+path = internal_path + "/data"
 ftpc = 2020
 ftpd = 2120
 httpd = 8020
@@ -16,16 +17,17 @@ def usage():
     print("     cdteca " + version)
     print('Usage: {} [options]\n'.format(os.path.basename(__file__)))
     print('Options:')
-    menu = {
-        '-h | --help': 'show this usage info',
-        '-s | --status': 'show status of internal servers',
-        '-i | --start': 'init/start servers',
-        '-f | --stop': 'finish/stop servers',
-        '-u | --update': 'update all distributions',
-        '-v | --verbose': 'enable verbose mode'
-    }
-    for mk in menu:
-        print("{:<15} {}".format(mk, menu[mk]))
+    menu = [
+        ['-h', '--help', 'show this usage info'],
+        ['-s', '--status', 'show status of internal servers'],
+        ['-i', '--start', 'init/start servers'],
+        ['-f', '--stop', 'finish/stop servers'],
+        ['-u', '--update', 'update all distributions'],
+        ['-d<name>', '--distro=<name>', 'update a single distro'],
+        ['-v', '--verbose', 'enable verbose mode']
+    ]
+    for ms, mx, md in menu:
+        print("{:>10} | {:<18} {}".format(ms, mx, md))
 
 def vprint(msg):
     if verbose:
@@ -34,6 +36,20 @@ def vprint(msg):
         print(cal, end=': ')
         sys.stdout.write("\033[0;0m")
         print(msg)
+
+def update_distro(distro):
+    distfile = internal_path + "/recipes/" + distro + ".distro"
+    vprint("Starting checking for {} for distro {}.".format(distfile, distro))
+    if os.path.exists(distfile):
+        vprint("Loading {} distro recipe.".format(distro))
+        with open(distfile) as file:
+            dconf = safe_load(file)
+    else:
+        print("No recipe found for distro {}.".format(distro))
+
+def update_distros():
+    for d in distros:
+        update_distro(d)
 
 def main():
     global verbose, title, path, ftpc, ftpd, httpd, distros
@@ -61,7 +77,7 @@ def main():
         sys.exit(1)
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hsifuv", ["help", "status", "start", "stop", "update", "verbose"] )
+        opts, args = getopt.getopt(sys.argv[1:], "hsifud:v", ["help", "status", "start", "stop", "update", "distro", "verbose"] )
     except getopt.GetoptError as err:
         print(err)
         usage()
@@ -74,7 +90,11 @@ def main():
             vprint("Verbose mode is on")
         elif o in ("-h", "--help"):
             usage()
-            sys.exit()            
+            sys.exit()
+        elif o in ("-u", "--update"):
+            update_distros()
+        elif o in ("-d", "--distro"):
+            update_distro(a)
     
     vprint("called with arguments: " + str(opts))
 
