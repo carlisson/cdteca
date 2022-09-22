@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>{{ title }}</title>
+
+	<meta name="keywords" content="free software gnu linux open source distro distributions download iso library">
+	<meta name="description" content="ISO library for GNU/Linux distributions">
+
+	<link rel="shortcut icon" href="cyanpack.ico"/>
+
+	<link rel="stylesheet" href="plus/style.css" type="text/css" media="screen" />
+  
+</head>
+<body>
+	<header>
+		<h1>{{ title }}</h1>
+		<!-- nav>
+			<a id="link-apps" href="#apps">Aplicativos</a>
+			<a id="link-ebooks" href="#ebooks">Ebooks</a>
+			<a id="link-live" href="#live">Trisquel</a>
+			<a id="link-log" href="#log">Histórico</a>
+		</nav -->
+	</header>
+	<aside>
+		<section>
+			<h3>Checksum</h3>
+			<center>{{ checksum }}</center>
+		</section>
+	</aside>
+	<article id="apps" name="apps">
+		<h2>Distribution files</h2>
+		<table id="applist">
+			<tr id="applist-header">
+				<th>Download</th>
+				<th>Date</th>
+				<th>Size</th>
+				<th>Links</th>
+			</tr>
+            {% for f in files %}
+			<tr class="row-odd">
+				<td><a href='{{ f.link }}'>{{ f.name }}</a></td>
+				<td>{{ f.date }}</td>
+				<td>{{ f.size }}</td>
+				<td><a href='{{ f.site }}'>Site</a></td>
+			</tr>
+            {% endfor %}
+		</table>
+	</article>
+	<footer>
+		&copy;2022 <a href="https://github.com/carlisson/cdteca">Cdteca</a>
+	</footer>
+</body>
+</html>
+

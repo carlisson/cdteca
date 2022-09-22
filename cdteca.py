@@ -6,9 +6,9 @@ from pyftpdlib.authorizers import DummyAuthorizer
 from pyftpdlib.handlers import FTPHandler
 from pyftpdlib.servers import FTPServer
 
-import os.path, getopt, sys, inspect, requests, re, hashlib
+import os.path, getopt, sys, inspect, requests, re, hashlib, jinja2, shutil
 
-version = "0.1"
+version = "0.1dev1"
 confile = os.path.dirname(__file__) + "/config.yaml"
 internal_path = os.path.dirname(__file__)
 verbose = False
@@ -21,6 +21,7 @@ ftp = {
     'user': "cdteca",
     'password': "cdteca"
 }
+html_theme = "simple"
 httpd = 8020
 distros = []
 
@@ -141,16 +142,35 @@ def build_index():
     """
 
     chklink = "<a href='{}.txt'>Checksum</a>".format(checksum_method)
+    templpath = internal_path + '/templates/' + html_theme
+    
+    vprint("Trying to build HTML from {}.".format(templpath))
+    if os.path.exists(templpath):
+        loader = jinja2.FileSystemLoader(templpath)
+        env = jinja2.Environment(loader=loader)
+        template = env.get_template('index.j2')
 
-    htfile = open(path + "/index.html" , "w")
-    htfile.write("<html><head><title>{}</title></head>".format(title))
-    htfile.write("<body><h1>{}</h1><div class='note'>{}</div>".format(title, chklink))
-    htfile.write("<ul>")
-    for fn in os.listdir(path):
-        if fn.endswith(".iso"):
-            htfile.write("<li><a href='{}'>{}</a></li>".format(fn, fn))
-    htfile.write("</ul></body></html>")
-    htfile.close()    
+        
+        dists = []
+        for fn in os.listdir(path):
+            if fn.endswith(".iso"):
+                dists.append(dict(name=fn, link=fn, date='', size='', site=''))        
+        template.render(title=title, checksum=chklink, files=dists)
+        htfile = open(path + "/index.html" , "w")
+        htfile.write(template.render(title=title, checksum=chklink, files=dists))
+        htfile.close()
+
+        # Replace theme files
+        themepath = path + '/plus'
+        if os.path.exists(themepath):
+            shutil.rmtree(themepath)
+        os.makedirs(themepath)
+        for fn in os.listdir(templpath):
+            if not fn.endswith(".j2"):
+                shutil.copyfile(templpath + "/" + fn, themepath + '/' + fn)
+    else:
+        print("Template {} not found.".format(html_template))
+    
 
 def ftpd():
     """
@@ -179,7 +199,7 @@ def ftpd():
     server.serve_forever()
 
 def main():
-    global verbose, title, path, ftpc, ftpd, httpd, distros, checksum_method
+    global verbose, title, path, ftp, httpd, distros, checksum_method, html_theme
 
     if os.path.exists(confile):
         with open(confile, 'r') as file:
@@ -197,6 +217,8 @@ def main():
                     ftp['password'] = cdconf['ftp-password']
             if "http-port" in cdconf:
                 httpd = cdconf['http-port']
+            if "html-theme" in cdconf:
+                html_theme = cdconf['html-theme']
             if "distros" in cdconf:
                 distros = cdconf['distros']
             if "checksum-method" in cdconf:

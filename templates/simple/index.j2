@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>{{ title }}</title>
+
+	<meta name="keywords" content="free software gnu linux open source distro distributions download iso library">
+	<meta name="description" content="ISO library for GNU/Linux distributions">
+  
+</head>
+<body>
+	<h1 style="text-align: center">{{ title }}</h1>
+	<div style="border: 1px solid black; text-align: center; padding: 5px; background-color: #c0c0c0; margin: 10px 0px">
+		{{ checksum }}
+	</div>
+	<table border='1px' align="center">
+		<tr>
+			<th>Download</th>
+			<th>Date</th>
+			<th>Size</th>
+			<th>Links</th>
+		</tr>
+        {% for f in files %}
+		<tr>
+			<td><a href='{{ f.link }}'>{{ f.name }}</a></td>
+			<td>{{ f.date }}</td>
+			<td>{{ f.size }}</td>
+			<td><a href='{{ f.site }}'>Site</a></td>
+		</tr>
+        {% endfor %}
+	</table>
+	<footer style="border-top: 1px solid #c0c0c0; text-align: center; margin: 10px 0px">
+		&copy;2022 <a href="https://github.com/carlisson/cdteca">Cdteca</a>
+	</footer>
+</body>
+</html>
+

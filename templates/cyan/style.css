@@ -1,0 +1,318 @@
+body {
+	padding: 0px;
+	margin: 0px;
+}
+
+aside ul {
+	padding-left: 20px;
+}
+
+aside li {
+	border-bottom: 1px solid #bbb;
+}
+
+header {
+	width: 100%;
+	height: 75px;
+	padding: 5px 0px;
+	background-color: #000;
+	background-image: url('cart.jpg');
+	background-repeat: repeat;
+	border-bottom: 5px solid #000;
+	color: #57ffb1;
+	margin: 0px;
+}
+
+header h1 {
+	color: white;
+	height: 0px;
+	padding: 15px;
+	margin: 0px;
+}
+
+header nav {
+	float: right;
+	display: block;
+	height: 65px;
+	margin: 0px;
+	padding-right: 10px;
+}
+header nav a {
+	width: 60px;
+	padding-top: 60px;
+	height: 0px;
+	margin: 5px;
+	background-color: transparent;
+	float: left;
+	overflow: hidden;
+}
+
+a {
+	text-decoration: none;
+	color: #1C5E9D;
+}
+
+a:visited {
+	color: #6E49C2;
+}
+
+figcaption {
+	font-size: 0.8em;
+}
+
+footer {
+	border-top: 1px solid #eee;
+	margin: 25px 10px 10px 10px;
+	text-align: center;
+	color: #aaa;
+	font-size: 0.8em;
+}
+
+footer a {
+	text-decoration: none;
+	color: #80A5C9;
+}
+
+footer a:hover {
+	color: #1C5E9D;
+}
+
+footer a:visited {
+	color: #AC9CCF;
+}
+
+article {
+	display: block;
+	margin-right: 255px;
+	margin-top: 15px;
+}
+
+article h2 {
+	padding-left: 35px;
+}
+
+aside {
+	width: 200px;
+	background-color: #eee;
+	background-image: url('sidebg2.jpg');
+	background-repeat: repeat-y;
+	background-position: top right;
+	border: 1px solid #ccc;
+	font-size: 0.7em;
+	padding: 5px;
+	padding-right: 45px;
+	float: right;
+	display: block;	
+	margin-top: 15px;
+}
+
+th {
+	background-color: #222;
+	border: 1px solid #000;
+	color: #57a9ff;
+}
+
+.row-even {
+	background-color: #fff;
+	color: #333;
+}
+.row-odd {
+	background-color: #ccc;
+	color: #333;
+}
+
+/* General grid styles */
+.cbp-ig-grid {
+list-style: none;
+padding: 0 0 50px 0;
+margin: 0;
+}
+/* Clear floats */
+.cbp-ig-grid:before, .cbp-ig-grid:after {
+content: " ";
+display: table;
+}
+.cbp-ig-grid:after {
+clear: both;
+}
+/* grid item */
+.cbp-ig-grid li {
+width: 33%;
+float: left;
+height: 420px;
+text-align: center;
+border-top: 1px solid #ddd;
+}
+/* we are using a combination of borders and box shadows to control the grid lines */
+.cbp-ig-grid li:nth-child(-n+3) {
+border-top: none;
+}
+.cbp-ig-grid li:nth-child(3n-1), .cbp-ig-grid li:nth-child(3n-2) {
+box-shadow: 1px 0 0 #ddd;
+}
+/* anchor style */
+.cbp-ig-grid li > a {
+display: block;
+height: 100%;
+color: #5c8ca0;
+-webkit-transition: background 0.2s;
+-moz-transition: background 0.2s;
+transition: background 0.2s;
+}
+/* the icon with pseudo class for icon font */
+.cbp-ig-icon {
+padding: 30px 0 0 0;
+display: block;
+-webkit-transition: -webkit-transform 0.2s;
+transition: -moz-transform 0.2s;
+transition: transform 0.2s;
+}
+.cbp-ig-icon:before {
+font-family: 'anyoldicon';
+font-size: 14em;
+speak: none;
+font-style: normal;
+font-weight: normal;
+font-variant: normal;
+text-transform: none;
+line-height: 1;
+-webkit-font-smoothing: antialiased;
+}
+.cbp-ig-icon-shoe:before {
+content: "\e011";
+}
+.cbp-ig-icon-ribbon:before {
+content: "\e00D";
+}
+.cbp-ig-icon-milk:before {
+content: "\e016";
+}
+.cbp-ig-icon-whippy:before {
+content: "\e003";
+}
+.cbp-ig-icon-spectacles:before {
+content: "\e004";
+}
+.cbp-ig-icon-doumbek:before {
+content: "\e007";
+}
+/* title element */
+.cbp-ig-grid .cbp-ig-title {
+margin: 20px 0 10px 0;
+padding: 20px 0 0 0;
+font-size: 2em;
+position: relative;
+-webkit-transition: -webkit-transform 0.2s;
+-moz-transition: -moz-transform 0.2s;
+transition: transform 0.2s;
+}
+.cbp-ig-grid .cbp-ig-title:before {
+content: '';
+position: absolute;
+background: #5c8ca0;
+width: 160px;
+height: 6px;
+top: 0px;
+left: 50%;
+margin: -10px 0 0 -80px;
+-webkit-transition: margin-top 0.2s; /* top or translate does not seem to work in Firefox */
+-moz-transition: margin-top 0.2s;
+transition: margin-top 0.2s;
+}
+.cbp-ig-grid .cbp-ig-category {
+text-transform: uppercase;
+display: inline-block;
+font-size: 1em;
+letter-spacing: 1px;
+color: #fff;
+-webkit-transform: translateY(10px);
+-moz-transform: -moz-translateY(10px);
+-ms-transform: -ms-translateY(10px);
+transform: translateY(10px);
+opacity: 0;
+-webkit-transition: -webkit-transform 0.3s, opacity 0.2s;
+-moz-transition: -moz-transform 0.3s, opacity 0.2s;
+-webkit-transition: transform 0.3s, opacity 0.2s;
+}
+.cbp-ig-grid li:hover .cbp-ig-category, .touch .cbp-ig-grid li .cbp-ig-category {
+opacity: 1;
+-webkit-transform: translateY(0px);
+-moz-transform: translateY(0px);
+-ms-transform: translateY(0px);
+transform: translateY(0px);
+}
+/* Hover styles */
+ 
+.cbp-ig-grid li > a:hover {
+background: #5c8ca0;
+}
+.cbp-ig-grid li > a:hover .cbp-ig-icon {
+-webkit-transform: translateY(10px);
+-moz-transform: translateY(10px);
+-ms-transform: translateY(10px);
+transform: translateY(10px);
+}
+.cbp-ig-grid li > a:hover .cbp-ig-icon:before, .cbp-ig-grid li > a:hover .cbp-ig-title {
+color: #fff;
+}
+.cbp-ig-grid li > a:hover .cbp-ig-title {
+-webkit-transform: translateY(-30px);
+-moz-transform: translateY(-30px);
+-ms-transform: translateY(-30px);
+transform: translateY(-30px);
+}
+.cbp-ig-grid li > a:hover .cbp-ig-title:before {
+background: #fff;
+margin-top: 80px;
+}
+ @media screen and (max-width: 62.75em) {
+.cbp-ig-grid li {
+width: 50%;
+}
+/* reset the grid lines */
+.cbp-ig-grid li:nth-child(-n+3) {
+border-top: 1px solid #ddd;
+}
+.cbp-ig-grid li:nth-child(3n-1),  .cbp-ig-grid li:nth-child(3n-2) {
+box-shadow: none;
+}
+.cbp-ig-grid li:nth-child(-n+2) {
+border-top: none;
+}
+.cbp-ig-grid li:nth-child(2n-1) {
+box-shadow: 1px 0 0 #ddd;
+}
+}
+ @media screen and (max-width: 41.6em) {
+.cbp-ig-grid li {
+width: 100%;
+}
+.cbp-ig-grid li:nth-child(-n+2) {
+border-top: 1px solid #ddd;
+}
+.cbp-ig-grid li:nth-child(2n-1) {
+box-shadow: none
+}
+.cbp-ig-grid li:first-child {
+border-top: none;
+}
+}
+ @media screen and (max-width: 25em) {
+.cbp-ig-grid {
+font-size: 80%;
+}
+.cbp-ig-grid .cbp-ig-category {
+margin-top: 20px;
+}
+}
+
+#float-title {
+	position: absolute;
+	top: 55px;
+	left: 0px;
+	width: 235px;
+	display: block;
+	text-align: right;
+	font-size: 1.0em;
+	color: #fff;
+}

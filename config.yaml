@@ -8,6 +8,7 @@ ftp-user: ftpd
 ftp-password: ftpass
 checksum-method: sha512
 http-port: 8020
+html-theme: cyan
 retains: 0
 distros:
   - debian
