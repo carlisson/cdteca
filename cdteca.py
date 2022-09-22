@@ -8,21 +8,19 @@ from pyftpdlib.servers import FTPServer
 
 import os.path, getopt, sys, inspect, requests, re, hashlib, jinja2, shutil
 
-version = "0.1dev1"
+version = "0.1dev2"
 confile = os.path.dirname(__file__) + "/config.yaml"
 internal_path = os.path.dirname(__file__)
 verbose = False
 title = "My Cdteca"
-path = internal_path + "/data"
+path = os.path.abspath(internal_path + "/../cdteca-data")
 checksum_method = "md5"
 ftp = {
-    'com': 2020,
-    'data': 2120,
+    'port': 2020,
     'user': "cdteca",
     'password': "cdteca"
 }
 html_theme = "simple"
-httpd = 8020
 distros = []
 
 def usage():
@@ -190,7 +188,7 @@ def ftpd():
     # Optionally specify range of ports to use for passive connections.
     #handler.passive_ports = range(60000, 65535)
 
-    address = ('', ftp['com'])
+    address = ('', ftp['port'])
     server = FTPServer(address, handler)
 
     server.max_cons = 256
@@ -199,7 +197,7 @@ def ftpd():
     server.serve_forever()
 
 def main():
-    global verbose, title, path, ftp, httpd, distros, checksum_method, html_theme
+    global verbose, title, path, ftp, distros, checksum_method, html_theme
 
     if os.path.exists(confile):
         with open(confile, 'r') as file:
@@ -209,14 +207,11 @@ def main():
             if "path" in cdconf:
                 path = cdconf['path']
             if "ftp-ports" in cdconf:
-                ftp['com'] = cdconf['ftp-ports'][0]
-                ftp['data'] = cdconf['ftp-ports'][1]
+                ftp['port'] = cdconf['ftp-port']
                 if "ftp-user" in cdconf:
                     ftp['user'] = cdconf['ftp-user']
                 if "ftp-password" in cdconf:
                     ftp['password'] = cdconf['ftp-password']
-            if "http-port" in cdconf:
-                httpd = cdconf['http-port']
             if "html-theme" in cdconf:
                 html_theme = cdconf['html-theme']
             if "distros" in cdconf:

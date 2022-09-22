@@ -1,13 +1,10 @@
 title: "CDteca from Configuration"
 path: "/home/dados/cdteca"
 verbose: True
-ftp-ports:
-  - 2020
-  - 2120
+ftp-port: 2020
 ftp-user: ftpd
 ftp-password: ftpass
 checksum-method: sha512
-http-port: 8020
 html-theme: cyan
 retains: 0
 distros:
