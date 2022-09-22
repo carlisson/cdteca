@@ -1,0 +1,6 @@
+url: https://www.linuxmint.com/edition.php?id=299
+isoregex: http(.*)64bit.iso
+isoposition: 2
+localregex: linuxmint-(.*).iso
+checksum: "sha256sum.txt"
+method: sha256

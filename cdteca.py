@@ -9,7 +9,7 @@ from pyftpdlib.servers import FTPServer
 
 import os.path, getopt, sys, inspect, requests, re, hashlib, jinja2, shutil
 
-version = "0.1dev5"
+version = "0.1dev6"
 confile = os.path.dirname(__file__) + "/config.yaml"
 internal_path = os.path.dirname(__file__)
 verbose = False
@@ -101,12 +101,24 @@ def update_distro(distro):
             if "url" in dconf and "isoregex" in dconf:
                 res = requests.get(dconf['url'])
                 if res.status_code == 200:
-                    isourl = [m.group(2) for m in re.finditer("(.*)(" + dconf['isoregex'] + ")\"(.*)", res.text)][0]
+
+                    # isopos is the position of iso in download page. Mint don't works with fist link (403 error)
+                    if "isoposition" in dconf:
+                        isopos = dconf['isoposition']
+                    else:
+                        isopos = 0
+
+                    isourl = [m.group(2) for m in re.finditer("(.*)(" + dconf['isoregex'] + ")\"(.*)", res.text)][isopos]
                     isobase = os.path.basename(isourl)
                     if isourl == isobase:
-                        isourl = dconf['url'] + '/' + isobase
+                        isourl = re.sub('\?(.*)', '', dconf['url']) + '/' + isobase
+                    isocheck = dconf['checksum'].replace('@', isourl)
+                    if not re.match('^(http|https|ftp)', isocheck):
+                        isocheck = isourl.replace(isobase, isocheck)
                     isofile = path + '/' + isobase
                     isotemp = isofile + '-partial'
+                    vprint("General: distro {} from {}. File is {}, checksum is {}. Temp is {}.".format(distro, isourl, isobase, isocheck, isotemp))
+
                     if os.path.exists(isofile):
                         print("Distro {} is up to date: {}".format(distro, isobase))
                     else:
@@ -115,8 +127,8 @@ def update_distro(distro):
                         urlretrieve(isourl, isotemp)
                         vprint("Download complete.")
 
-                        res = requests.get(dconf['checksum'].replace('@', isourl))
-                        remsum = [m.group(1) for m in re.finditer("(.*)" + isobase, res.text)][0].strip()
+                        res = requests.get(isocheck)
+                        remsum = [m.group(1) for m in re.finditer("(.*) (.*)" + isobase, res.text)][0].strip()
                         if check_sum(isotemp, dconf['method']) == remsum:
                             vprint("Checksum validated. All is fine!")
                             os.rename(isotemp, isofile)
