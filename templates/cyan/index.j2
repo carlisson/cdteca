@@ -16,12 +16,6 @@
 <body>
 	<header>
 		<h1>{{ title }}</h1>
-		<!-- nav>
-			<a id="link-apps" href="#apps">Aplicativos</a>
-			<a id="link-ebooks" href="#ebooks">Ebooks</a>
-			<a id="link-live" href="#live">Trisquel</a>
-			<a id="link-log" href="#log">Histórico</a>
-		</nav -->
 	</header>
 	<aside>
 		<section>
@@ -36,14 +30,12 @@
 				<th>Download</th>
 				<th>Date</th>
 				<th>Size</th>
-				<th>Links</th>
 			</tr>
             {% for f in files %}
 			<tr class="row-odd">
 				<td><a href='{{ f.link }}'>{{ f.name }}</a></td>
 				<td>{{ f.date }}</td>
 				<td>{{ f.size }}</td>
-				<td><a href='{{ f.site }}'>Site</a></td>
 			</tr>
             {% endfor %}
 		</table>

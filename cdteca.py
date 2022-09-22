@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 from yaml import safe_load
 from urllib.request import urlretrieve
+from datetime import datetime
 
 from pyftpdlib.authorizers import DummyAuthorizer
 from pyftpdlib.handlers import FTPHandler
@@ -8,7 +9,7 @@ from pyftpdlib.servers import FTPServer
 
 import os.path, getopt, sys, inspect, requests, re, hashlib, jinja2, shutil
 
-version = "0.1dev3"
+version = "0.1dev4"
 confile = os.path.dirname(__file__) + "/config.yaml"
 internal_path = os.path.dirname(__file__)
 verbose = False
@@ -52,6 +53,18 @@ def vprint(msg):
         print(cal, end=': ')
         sys.stdout.write("\033[0;0m")
         print(msg)
+
+def humansize(nbytes):
+    """
+    Converts bytes to human readable format.
+    """
+    suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+    i = 0
+    while nbytes >= 1024 and i < len(suffixes)-1:
+        nbytes /= 1024.
+        i += 1
+    f = ('%.2f' % nbytes).rstrip('0').rstrip('.')
+    return '{} {}'.format(f, suffixes[i])
 
 def check_sum(file, type):
     """
@@ -152,7 +165,11 @@ def build_index():
         dists = []
         for fn in os.listdir(path):
             if fn.endswith(".iso"):
-                dists.append(dict(name=fn, link=fn, date='', size='', site=''))        
+                dt = datetime.fromtimestamp(os.path.getctime(path + '/' + fn))
+
+                dists.append(dict(name=fn, link=fn, date=dt.strftime("%Y-%m-%d"),
+                    size=humansize(os.path.getsize(path + '/' + fn)) ))
+
         template.render(title=title, checksum=chklink, files=dists)
         htfile = open(path + "/index.html" , "w")
         htfile.write(template.render(title=title, checksum=chklink, files=dists))
