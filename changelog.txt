@@ -18,3 +18,4 @@
 0.1dev4  2022-09-22: HTML includes file creation and size
 0.1dev5  2022-09-22: MX recipe. MD5 and sha256 supported
 0.1dev6  2022-09-22: Mint recipe. Fixed MX recipe. Added localregex
+0.1dev7  2022-09-22: Retains option to not remove old files (default:True)

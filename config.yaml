@@ -6,10 +6,10 @@ ftp-user: ftpd
 ftp-password: ftpass
 checksum-method: sha512
 html-theme: simple
-retains: 0
+retains: False
 distros:
   - debian
   - fedora
   - ubuntu
   - mx
-  - linuxmint
+  - mint

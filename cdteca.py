@@ -9,10 +9,11 @@ from pyftpdlib.servers import FTPServer
 
 import os.path, getopt, sys, inspect, requests, re, hashlib, jinja2, shutil
 
-version = "0.1dev6"
+version = "0.1dev7"
 confile = os.path.dirname(__file__) + "/config.yaml"
 internal_path = os.path.dirname(__file__)
 verbose = False
+retains = True
 title = "My Cdteca"
 path = os.path.abspath(internal_path + "/../cdteca-data")
 checksum_method = "md5"
@@ -84,6 +85,18 @@ def check_sum(file, type):
     else:
         print("File {} do not exists!".format(file))
 
+def iso_clear(iso, patt):
+    """
+    Remove old versions of iso if "retains" is False.
+    """
+    if not retains:
+        vprint("Checking old files for {}.".format(iso))
+        for fn in os.listdir(path):
+            if re.match(patt, fn):
+                if fn != iso:
+                    os.remove(path + '/' + fn)
+                    vprint("{} removed.".format(fn))
+
 def update_distro(distro):
     """
     Update a single distro based on distro's recipe.
@@ -121,6 +134,7 @@ def update_distro(distro):
 
                     if os.path.exists(isofile):
                         print("Distro {} is up to date: {}".format(distro, isobase))
+                        iso_clear(isobase, dconf["localregex"])
                     else:
                         vprint("Starting download of iso for {} distro. Wait, it can take time...".format(distro))
                         
@@ -132,6 +146,7 @@ def update_distro(distro):
                         if check_sum(isotemp, dconf['method']) == remsum:
                             vprint("Checksum validated. All is fine!")
                             os.rename(isotemp, isofile)
+                            iso_clear(isobase, dconf["localregex"])
                         else:
                             print("Checksum don't match. Aborting...")
                             os.remove(isotemp)
@@ -180,7 +195,7 @@ def build_index():
 
         
         dists = []
-        for fn in os.listdir(path):
+        for fn in sorted(os.listdir(path)):
             if fn.endswith(".iso"):
                 dt = datetime.fromtimestamp(os.path.getctime(path + '/' + fn))
 
@@ -231,7 +246,7 @@ def ftpd():
     server.serve_forever()
 
 def main():
-    global verbose, title, path, ftp, distros, checksum_method, html_theme
+    global verbose, title, path, ftp, distros, checksum_method, html_theme, retains
 
     if os.path.exists(confile):
         with open(confile, 'r') as file:
@@ -252,6 +267,8 @@ def main():
                 distros = cdconf['distros']
             if "checksum-method" in cdconf:
                 checksum_method = cdconf["checksum-method"]
+            if "retains" in cdconf:
+                retains = cdconf['retains']
             if "verbose" in cdconf:                
                 verbose = cdconf['verbose']
                 vprint("Loaded: " + str(cdconf))
