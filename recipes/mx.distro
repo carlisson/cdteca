@@ -1,0 +1,4 @@
+url: http://mirror.ufam.edu.br/mx/MX/Final/
+isoregex: MX(.*)\d_x64.iso
+checksum: "@.sha256"
+method: sha256

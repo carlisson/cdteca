@@ -9,7 +9,7 @@ from pyftpdlib.servers import FTPServer
 
 import os.path, getopt, sys, inspect, requests, re, hashlib, jinja2, shutil
 
-version = "0.1dev4"
+version = "0.1dev5"
 confile = os.path.dirname(__file__) + "/config.yaml"
 internal_path = os.path.dirname(__file__)
 verbose = False
@@ -73,8 +73,14 @@ def check_sum(file, type):
     if os.path.exists(file):
         if type == "sha512":
             hasha = hashlib.sha512()
-            hasha.update( open(file, 'rb').read())
-            return hasha.hexdigest()
+        elif type == "md5":
+            hasha = hashlib.md5()
+        elif type =="sha256":
+            hasha = hashlib.sha256()
+        hasha.update( open(file, 'rb').read())
+        resul = hasha.hexdigest()
+        vprint("checksum of {} with type {} resulted in {}".format(file, type, resul))
+        return resul
     else:
         print("File {} do not exists!".format(file))
 
@@ -97,6 +103,8 @@ def update_distro(distro):
                 if res.status_code == 200:
                     isourl = [m.group(2) for m in re.finditer("(.*)(" + dconf['isoregex'] + ")\"(.*)", res.text)][0]
                     isobase = os.path.basename(isourl)
+                    if isourl == isobase:
+                        isourl = dconf['url'] + '/' + isobase
                     isofile = path + '/' + isobase
                     isotemp = isofile + '-partial'
                     if os.path.exists(isofile):
@@ -107,7 +115,7 @@ def update_distro(distro):
                         urlretrieve(isourl, isotemp)
                         vprint("Download complete.")
 
-                        res = requests.get(dconf['checksum'])
+                        res = requests.get(dconf['checksum'].replace('@', isourl))
                         remsum = [m.group(1) for m in re.finditer("(.*)" + isobase, res.text)][0].strip()
                         if check_sum(isotemp, dconf['method']) == remsum:
                             vprint("Checksum validated. All is fine!")
@@ -141,10 +149,7 @@ def build_checksums():
 
     for fn in os.listdir(path):
         if fn.endswith(".iso"):
-            if checksum_method == "sha512":
-                hasha = hashlib.sha512()
-            hasha.update( open(path + '/' + fn, 'rb').read())
-            checkfile.write(hasha.hexdigest() + " " + fn)
+            checkfile.write(check_sum(path + '/' + fn, checksum_method) + " " + fn + os.linesep)
     checkfile.close()
 
 def build_index():

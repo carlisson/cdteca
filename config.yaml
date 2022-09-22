@@ -11,3 +11,4 @@ distros:
   - debian
   - fedora
   - ubuntu
+  - mx
