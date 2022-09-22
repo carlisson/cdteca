@@ -8,7 +8,7 @@ from pyftpdlib.servers import FTPServer
 
 import os.path, getopt, sys, inspect, requests, re, hashlib, jinja2, shutil
 
-version = "0.1dev2"
+version = "0.1dev3"
 confile = os.path.dirname(__file__) + "/config.yaml"
 internal_path = os.path.dirname(__file__)
 verbose = False

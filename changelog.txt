@@ -14,3 +14,4 @@
 0.1      2022-09-22: First public release
 0.1dev1  2022-09-22: Theme support. Two themes add: simple, cyan
 0.1dev2  2022-09-22: Updated config, removing some unused ports
+0.1dev3  2022-09-22: Fixed css in cyan theme
