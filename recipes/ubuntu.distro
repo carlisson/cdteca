@@ -4,7 +4,7 @@ versionpage:
 - group: 1
 isopage:
 - url: "https://mirror.ufam.edu.br/releases/{ver}/"
-- regex: ubuntu[^ ]*\.iso
+- regex: ubuntu[^ ]*-desktop-amd64\.iso
 localregex: ubuntu-(.*)-desktop-amd64.iso
 checksumpage:
 - url: "SHA256SUMS"

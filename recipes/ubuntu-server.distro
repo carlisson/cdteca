@@ -1,0 +1,11 @@
+versionpage:
+- url: "https://ubuntu.com/download/server"
+- regex: Ubuntu Server (\d[^ ]*)
+- group: 1
+isopage:
+- url: "https://mirror.ufam.edu.br/releases/{ver}/"
+- regex: ubuntu[^ ]*-live-server-amd64\.iso
+localregex: ubuntu-(.*)-live-server-amd64.iso
+checksumpage:
+- url: "SHA256SUMS"
+method: sha256
