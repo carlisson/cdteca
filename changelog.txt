@@ -19,3 +19,4 @@
 0.1dev5  2022-09-22: MX recipe. MD5 and sha256 supported
 0.1dev6  2022-09-22: Mint recipe. Fixed MX recipe. Added localregex
 0.1dev7  2022-09-22: Retains option to not remove old files (default:True)
+0.1dev8  2022-09-23: Internal change, creating function extract_info

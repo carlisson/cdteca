@@ -9,7 +9,7 @@ from pyftpdlib.servers import FTPServer
 
 import os.path, getopt, sys, inspect, requests, re, hashlib, jinja2, shutil
 
-version = "0.1dev7"
+version = "0.1dev8"
 confile = os.path.dirname(__file__) + "/config.yaml"
 internal_path = os.path.dirname(__file__)
 verbose = False
@@ -67,6 +67,23 @@ def humansize(nbytes):
     f = ('%.2f' % nbytes).rstrip('0').rstrip('.')
     return '{} {}'.format(f, suffixes[i])
 
+def extract_info(url, regex, position = 0, group = 2):
+    """
+    Find a expression in a HTML URL.
+    @param url to catch
+    @param full regular expression, defyning groups.
+    @param position in HTML
+    @param group catched, based on regular expression
+    """
+    res = requests.get(url)
+    if res.status_code == 200:
+        outp = [m.group(group) for m in re.finditer(regex, res.text)][position]
+        vprint("Applying regex {} in {}, it was found: {}.".format(regex, url, outp))
+        return outp
+    else:
+        print("url {} returned status code {}.".format(url, res.status_code))
+    return ""    
+
 def check_sum(file, type):
     """
     Checksum for downloaded file, using different algorithms.
@@ -112,16 +129,17 @@ def update_distro(distro):
         with open(distfile) as file:
             dconf = safe_load(file)
             if "url" in dconf and "isoregex" in dconf:
+                
+                # isopos is the position of iso in download page. Mint don't works with fist link (403 error)
+                if "isoposition" in dconf:
+                    isopos = dconf['isoposition']
+                else:
+                    isopos = 0
+                
+                isourl = extract_info(dconf['url'], "(.*)(" + dconf['isoregex'] + ")[\"\'](.*)", isopos)
                 res = requests.get(dconf['url'])
-                if res.status_code == 200:
+                if isourl != "":
 
-                    # isopos is the position of iso in download page. Mint don't works with fist link (403 error)
-                    if "isoposition" in dconf:
-                        isopos = dconf['isoposition']
-                    else:
-                        isopos = 0
-
-                    isourl = [m.group(2) for m in re.finditer("(.*)(" + dconf['isoregex'] + ")\"(.*)", res.text)][isopos]
                     isobase = os.path.basename(isourl)
                     if isourl == isobase:
                         isourl = re.sub('\?(.*)', '', dconf['url']) + '/' + isobase
@@ -141,8 +159,7 @@ def update_distro(distro):
                         urlretrieve(isourl, isotemp)
                         vprint("Download complete.")
 
-                        res = requests.get(isocheck)
-                        remsum = [m.group(1) for m in re.finditer("(.*) (.*)" + isobase, res.text)][0].strip()
+                        remsum = extract_info(isocheck, "(.*) (.*)" + isobase, group=1)
                         if check_sum(isotemp, dconf['method']) == remsum:
                             vprint("Checksum validated. All is fine!")
                             os.rename(isotemp, isofile)
