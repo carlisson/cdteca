@@ -1,7 +1,7 @@
 # Cdteca
 Cdteca is a simple ISO library downloader/manager.
 
-![misc/screenshot-0.2.png](Cdteca 0.2 HTML output, with cyan theme)
+![Cdteca 0.2 HTML output, with cyan theme](misc/screenshot-0.2.png)
 
 ## Why?
 Main usage is to keep a local ISO library of GNU/Linux distributions and other operating systems to use as a storage for Proxmox. Other uses includes human access in intranet.
