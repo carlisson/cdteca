@@ -24,3 +24,4 @@
 0.1dev10 2022-09-23: Download method was reestructured to cover complex cases
 0.1dev11 2022-09-23: Recipe for fedora desktop
 0.1dev12 2022-09-23: Fedora server supported
+0.1dev13 2022-09-23: Ubuntu recipe included
