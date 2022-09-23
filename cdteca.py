@@ -9,7 +9,7 @@ from pyftpdlib.servers import FTPServer
 
 import os.path, getopt, sys, inspect, requests, re, hashlib, jinja2, shutil
 
-version = "0.2"
+version = "0.2.1"
 confile = os.path.dirname(__file__) + "/config.yaml"
 internal_path = os.path.dirname(__file__)
 verbose = False
@@ -225,7 +225,7 @@ def update_distros():
     """
     Update all distros on internal list.
     """
-    os.makedirs(path)
+    os.makedirs(path, exist_ok=True)
     for d in distros:
         update_distro(d)
     
