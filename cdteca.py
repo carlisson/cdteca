@@ -9,7 +9,7 @@ from pyftpdlib.servers import FTPServer
 
 import os.path, getopt, sys, inspect, requests, re, hashlib, jinja2, shutil
 
-version = "0.1dev14"
+version = "0.1dev15"
 confile = os.path.dirname(__file__) + "/config.yaml"
 internal_path = os.path.dirname(__file__)
 verbose = False
@@ -245,6 +245,16 @@ def build_checksums():
             checkfile.write(check_sum(path + '/' + fn, checksum_method) + " " + fn + os.linesep)
     checkfile.close()
 
+def list_distros():
+    """
+    List all supported distros
+    """
+    print('GNU/Linux distributions supported by Cdteca: ', end='')
+    for fn in sorted(os.listdir(internal_path + "/recipes/")):
+        if fn.endswith(".distro"):
+            print(fn.replace('.distro', ''), end = ' ' )
+    print()
+
 def build_index():
     """
     Create an HTML linking the files.
@@ -365,6 +375,8 @@ def main():
             update_distro(a)
         elif o in ('-D', '--daemon'):
             ftpd()
+        elif o in ('-l', '--list'):
+            list_distros()
     
 
 if __name__ == "__main__":
