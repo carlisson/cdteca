@@ -9,7 +9,7 @@ from pyftpdlib.servers import FTPServer
 
 import os.path, getopt, sys, inspect, requests, re, hashlib, jinja2, shutil
 
-version = "0.2.1"
+version = "0.2dev2"
 confile = os.path.dirname(__file__) + "/config.yaml"
 internal_path = os.path.dirname(__file__)
 verbose = False
@@ -332,12 +332,12 @@ def main():
                 title = cdconf['title']
             if "path" in cdconf:
                 path = cdconf['path']
-            if "ftp-ports" in cdconf:
+            if "ftp-port" in cdconf:
                 ftp['port'] = cdconf['ftp-port']
-                if "ftp-user" in cdconf:
-                    ftp['user'] = cdconf['ftp-user']
-                if "ftp-password" in cdconf:
-                    ftp['password'] = cdconf['ftp-password']
+            if "ftp-user" in cdconf:
+                ftp['user'] = cdconf['ftp-user']
+            if "ftp-password" in cdconf:
+                ftp['password'] = cdconf['ftp-password']
             if "html-theme" in cdconf:
                 html_theme = cdconf['html-theme']
             if "distros" in cdconf:
