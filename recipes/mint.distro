@@ -1,6 +1,8 @@
-url: https://www.linuxmint.com/edition.php?id=299
-isoregex: http(.*)64bit.iso
-isoposition: 2
+isopage:
+- url: https://www.linuxmint.com/edition.php?id=299
+- regex: http(.*)64bit.iso
+- position: 2
 localregex: linuxmint-(.*).iso
-checksum: "sha256sum.txt"
+checksumpage:
+- url: "sha256sum.txt"
 method: sha256

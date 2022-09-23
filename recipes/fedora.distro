@@ -1,8 +1,12 @@
-preurl: https://getfedora.org/en/workstation/download/
-verregex: (.*)Fedora\ (..)\ Workstation(.*)
-url: http://fedora.c3sl.ufpr.br/linux/releases/{ver}/Workstation/x86_64/iso/
-isoregex: Fedora-Workstation-[^ ]*.iso
+versionpage:
+- url: https://getfedora.org/en/workstation/download/
+- regex: (.*)Fedora\ (..)\ Workstation(.*)
+isopage:
+- url: http://fedora.c3sl.ufpr.br/linux/releases/{ver}/Workstation/x86_64/iso/
+- regex: Fedora-Workstation-[^ ]*.iso
 localregex: Fedora-Workstation-(.*).iso
-checkregex: Fedora-Workstation-[^ ]*-CHECKSUM
+checksumpage:
+- url: to-do
+- regex: Fedora-Workstation-[^ ]*-CHECKSUM
 hashregex: .*([^ ]*)$
 method: sha256

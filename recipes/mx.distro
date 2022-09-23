@@ -1,5 +1,7 @@
-url: https://mirror.ufam.edu.br/mx/MX/Final/Xfce/?C=M;O=D
-isoregex: MX(.*)\d_x64.iso
+isopage:
+- url: https://mirror.ufam.edu.br/mx/MX/Final/Xfce/?C=M;O=D
+- regex: MX(.*)\d_x64.iso
 localregex: MX-(.*).iso
-checksum: "@.sha256"
+checksumpage:
+- url: "@.sha256"
 method: sha256

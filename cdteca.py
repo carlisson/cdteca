@@ -9,7 +9,7 @@ from pyftpdlib.servers import FTPServer
 
 import os.path, getopt, sys, inspect, requests, re, hashlib, jinja2, shutil
 
-version = "0.1dev8"
+version = "0.1dev9"
 confile = os.path.dirname(__file__) + "/config.yaml"
 internal_path = os.path.dirname(__file__)
 verbose = False
@@ -128,22 +128,24 @@ def update_distro(distro):
         vprint("Loading {} distro recipe.".format(distro))
         with open(distfile) as file:
             dconf = safe_load(file)
-            if "url" in dconf and "isoregex" in dconf:
+            isoconf = dconf["isopage"]
+            sumconf = dconf["checksumpage"]
+            if "url" in dconf and "regex" in isoconf:
                 
                 # isopos is the position of iso in download page. Mint don't works with fist link (403 error)
-                if "isoposition" in dconf:
-                    isopos = dconf['isoposition']
+                if "position" in isoconf:
+                    isopos = isoconf['position']
                 else:
                     isopos = 0
                 
-                isourl = extract_info(dconf['url'], "(.*)(" + dconf['isoregex'] + ")[\"\'](.*)", isopos)
-                res = requests.get(dconf['url'])
+                isourl = extract_info(isoconf['url'], "(.*)(" + isoconf['regex'] + ")[\"\'](.*)", isopos)
+                res = requests.get(isoconf['url'])
                 if isourl != "":
 
                     isobase = os.path.basename(isourl)
                     if isourl == isobase:
-                        isourl = re.sub('\?(.*)', '', dconf['url']) + '/' + isobase
-                    isocheck = dconf['checksum'].replace('@', isourl)
+                        isourl = re.sub('\?(.*)', '', isoconf['url']) + '/' + isobase
+                    isocheck = sumconf['url'].replace('@', isourl)
                     if not re.match('^(http|https|ftp)', isocheck):
                         isocheck = isourl.replace(isobase, isocheck)
                     isofile = path + '/' + isobase
@@ -167,8 +169,6 @@ def update_distro(distro):
                         else:
                             print("Checksum don't match. Aborting...")
                             os.remove(isotemp)
-                else:
-                    print('Requesting {} results in {} status.'.format(dconf['url'], res.status_code))
     else:
         print("No recipe found for distro {}.".format(distro))
 
