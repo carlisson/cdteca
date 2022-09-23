@@ -9,7 +9,6 @@ html-theme: simple
 retains: False
 distros:
   - debian
-  - fedora
   - ubuntu
   - mx
   - mint

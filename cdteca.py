@@ -9,7 +9,7 @@ from pyftpdlib.servers import FTPServer
 
 import os.path, getopt, sys, inspect, requests, re, hashlib, jinja2, shutil
 
-version = "0.1dev9"
+version = "0.1dev10"
 confile = os.path.dirname(__file__) + "/config.yaml"
 internal_path = os.path.dirname(__file__)
 verbose = False
@@ -67,7 +67,24 @@ def humansize(nbytes):
     f = ('%.2f' % nbytes).rstrip('0').rstrip('.')
     return '{} {}'.format(f, suffixes[i])
 
-def extract_info(url, regex, position = 0, group = 2):
+def apply_replaces(url, subst):
+    for str in subst:
+        url = url.replace(str, subst[str])
+    return url
+
+def fix_dict(bdic):
+    fdic = dict()
+    if type(bdic) is list:
+        for i in bdic:
+            for k in i:
+                fdic[k] = i[k]
+    else:
+        fdic = bdic
+    vprint("Fixed dict. Before: {}. After: {}".format(bdic, fdic))
+    return fdic
+
+
+def extract_info(page, reg = False, subst = False):
     """
     Find a expression in a HTML URL.
     @param url to catch
@@ -75,13 +92,27 @@ def extract_info(url, regex, position = 0, group = 2):
     @param position in HTML
     @param group catched, based on regular expression
     """
-    res = requests.get(url)
+    lpage = fix_dict(page)
+    
+    if 'regex' not in lpage:
+        return lpage['url']
+    if 'position' not in lpage:
+        lpage['position'] = 0
+    if 'group' not in lpage:
+        lpage['group'] = 2
+    if reg:
+        lpage['regex'] = reg.format(lpage['regex'])
+    if subst:
+        lpage['url'] = apply_replaces(lpage['url'], subst)
+
+    vprint('Extracting {}'.format(lpage))
+    res = requests.get(lpage['url'])
     if res.status_code == 200:
-        outp = [m.group(group) for m in re.finditer(regex, res.text)][position]
-        vprint("Applying regex {} in {}, it was found: {}.".format(regex, url, outp))
+        outp = [m.group(lpage['group']) for m in re.finditer(lpage['regex'], res.text)][lpage['position']]
+        vprint("Applying regex {} in {}, it was found: {}.".format(lpage['regex'], lpage['url'], outp))
         return outp
     else:
-        print("url {} returned status code {}.".format(url, res.status_code))
+        print("url {} returned status code {}.".format(lpage['url'], res.status_code))
     return ""    
 
 def check_sum(file, type):
@@ -127,29 +158,28 @@ def update_distro(distro):
     if os.path.exists(distfile):
         vprint("Loading {} distro recipe.".format(distro))
         with open(distfile) as file:
-            dconf = safe_load(file)
-            isoconf = dconf["isopage"]
-            sumconf = dconf["checksumpage"]
-            if "url" in dconf and "regex" in isoconf:
+            dconf = safe_load(file) 
+            subst = dict()           
+            if "versionpage" in dconf:
+                vprint("versionpage found for {}".format(distro))
+                verconf = fix_dict(dconf["versionpage"])
+                subst['{ver}'] = extract_info(verconf)
+            isoconf = fix_dict(dconf["isopage"])
+            sumconf = fix_dict(dconf["checksumpage"])
+            if "url" in isoconf and "regex" in isoconf:
                 
-                # isopos is the position of iso in download page. Mint don't works with fist link (403 error)
-                if "position" in isoconf:
-                    isopos = isoconf['position']
-                else:
-                    isopos = 0
-                
-                isourl = extract_info(isoconf['url'], "(.*)(" + isoconf['regex'] + ")[\"\'](.*)", isopos)
-                res = requests.get(isoconf['url'])
+                isourl = extract_info(isoconf, reg = "(.*)({})[\"\'](.*)", subst = subst)
                 if isourl != "":
 
                     isobase = os.path.basename(isourl)
                     if isourl == isobase:
                         isourl = re.sub('\?(.*)', '', isoconf['url']) + '/' + isobase
-                    isocheck = sumconf['url'].replace('@', isourl)
-                    if not re.match('^(http|https|ftp)', isocheck):
-                        isocheck = isourl.replace(isobase, isocheck)
+                    subst['@'] = isourl
                     isofile = path + '/' + isobase
                     isotemp = isofile + '-partial'
+                    isocheck = {
+                        'url': apply_replaces(sumconf['url'], subst)
+                    }
                     vprint("General: distro {} from {}. File is {}, checksum is {}. Temp is {}.".format(distro, isourl, isobase, isocheck, isotemp))
 
                     if os.path.exists(isofile):
@@ -161,8 +191,18 @@ def update_distro(distro):
                         urlretrieve(isourl, isotemp)
                         vprint("Download complete.")
 
-                        remsum = extract_info(isocheck, "(.*) (.*)" + isobase, group=1)
-                        if check_sum(isotemp, dconf['method']) == remsum:
+                        if 'regex' in sumconf:
+                            isocheck['regex'] = sumconf['regex']
+                            if 'position' in sumconf:
+                                isocheck['position'] = sumconf['position']
+                            if 'group' in sumconf:
+                                isocheck['group'] = sumconf['group']
+                        else:
+                            isocheck['regex'] = "(.*) (.*)" + isobase
+                            isocheck['group'] = 1
+                        if not re.match('^(http|https|ftp)', isocheck['url']):
+                            isocheck['url'] = isourl.replace(isobase, isocheck['url'])
+                        if check_sum(isotemp, dconf['method']) == extract_info(isocheck).strip():
                             vprint("Checksum validated. All is fine!")
                             os.rename(isotemp, isofile)
                             iso_clear(isobase, dconf["localregex"])

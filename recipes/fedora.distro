@@ -1,9 +1,10 @@
-versionpage:
-- url: https://getfedora.org/en/workstation/download/
-- regex: (.*)Fedora\ (..)\ Workstation(.*)
 isopage:
 - url: http://fedora.c3sl.ufpr.br/linux/releases/{ver}/Workstation/x86_64/iso/
 - regex: Fedora-Workstation-[^ ]*.iso
+versionpage:
+- url: https://getfedora.org/en/workstation/download/
+- regex: (.*)Fedora\ (..)\ Workstation(.*)
+- position: 2
 localregex: Fedora-Workstation-(.*).iso
 checksumpage:
 - url: to-do
