@@ -11,6 +11,6 @@ checksumpre:
 - regex: Fedora-Workstation-[^ ]*-CHECKSUM
 checksumpage:
 - url: "{dir}{pre}"
-- regex: (.*)=( *)([^ ]*)\n
-- group: 3
+- regex: (.*)Fedora-Workstation-(.*)=( *)([^ ]*)\n
+- group: 4
 method: sha256

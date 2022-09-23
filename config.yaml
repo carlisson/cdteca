@@ -5,10 +5,12 @@ ftp-port: 2020
 ftp-user: ftpd
 ftp-password: ftpass
 checksum-method: sha512
-html-theme: simple
+html-theme: cyan
 retains: False
 distros:
   - debian
+  - fedora
+  - fedora-server
   - ubuntu
   - mx
   - mint

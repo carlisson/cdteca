@@ -1,0 +1,16 @@
+versionpage:
+- url: "https://getfedora.org/en/server/download/"
+- regex: (.*)Fedora\ (..)\ Server(.*)
+- group: 2
+isopage:
+- url: "http://fedora.c3sl.ufpr.br/linux/releases/{ver}/Server/x86_64/iso/"
+- regex: Fedora-Server-dvd-[^ ]*.iso
+localregex: Fedora-Server-dvd-(.*).iso
+checksumpre:
+- url: "http://fedora.c3sl.ufpr.br/linux/releases/{ver}/Server/x86_64/iso/"
+- regex: Fedora-Server-[^ ]*-CHECKSUM
+checksumpage:
+- url: "{dir}{pre}"
+- regex: (.*)Fedora-Server-dvd(.*)=( *)([^ ]*)\n
+- group: 4
+method: sha256
