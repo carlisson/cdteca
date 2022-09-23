@@ -9,7 +9,7 @@ from pyftpdlib.servers import FTPServer
 
 import os.path, getopt, sys, inspect, requests, re, hashlib, jinja2, shutil
 
-version = "0.1dev10"
+version = "0.1dev11"
 confile = os.path.dirname(__file__) + "/config.yaml"
 internal_path = os.path.dirname(__file__)
 verbose = False
@@ -153,6 +153,8 @@ def update_distro(distro):
     os.makedirs(path, exist_ok=True)
     """ mkdir -p """
 
+    reglink = "(.*)({})[\"\'](.*)" # regular expression for general usage
+
     distfile = internal_path + "/recipes/" + distro + ".distro"
     vprint("Starting checking for {} for distro {}.".format(distfile, distro))
     if os.path.exists(distfile):
@@ -164,19 +166,26 @@ def update_distro(distro):
                 vprint("versionpage found for {}".format(distro))
                 verconf = fix_dict(dconf["versionpage"])
                 subst['{ver}'] = extract_info(verconf)
+            if "checksumpre" in dconf:
+                vprint("checksum pre-page found for {}".format(distro))
+                preconf = fix_dict(dconf["checksumpre"])
+                subst['{pre}'] = extract_info(preconf, reg = reglink, subst = subst)
             isoconf = fix_dict(dconf["isopage"])
             sumconf = fix_dict(dconf["checksumpage"])
             if "url" in isoconf and "regex" in isoconf:
                 
-                isourl = extract_info(isoconf, reg = "(.*)({})[\"\'](.*)", subst = subst)
+                isourl = extract_info(isoconf, reg = reglink, subst = subst)
                 if isourl != "":
 
                     isobase = os.path.basename(isourl)
                     if isourl == isobase:
                         isourl = re.sub('\?(.*)', '', isoconf['url']) + '/' + isobase
                     subst['{iso}'] = isourl
+                    subst['{bas}'] = isobase
+                    subst['{dir}'] = isourl.replace(isobase, '')
                     isofile = path + '/' + isobase
                     isotemp = isofile + '-partial'
+                    vprint(sumconf)
                     isocheck = {
                         'url': apply_replaces(sumconf['url'], subst)
                     }
@@ -192,7 +201,7 @@ def update_distro(distro):
                         vprint("Download complete.")
 
                         if 'regex' in sumconf:
-                            isocheck['regex'] = sumconf['regex']
+                            isocheck['regex'] = apply_replaces(sumconf['regex'], subst)
                             if 'position' in sumconf:
                                 isocheck['position'] = sumconf['position']
                             if 'group' in sumconf:
