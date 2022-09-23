@@ -27,3 +27,4 @@
 0.1dev13 2022-09-23: Ubuntu recipe included
 0.1dev14 2022-09-23: Ubuntu server supported
 0.1dev15 2022-09-23: Listing implemented
+0.2      2022-09-23: Release, supporting themes and seven distros
