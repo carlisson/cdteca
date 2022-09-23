@@ -3,5 +3,5 @@ isopage:
 - regex: MX(.*)\d_x64.iso
 localregex: MX-(.*).iso
 checksumpage:
-- url: "@.sha256"
+- url: "{iso}.sha256"
 method: sha256

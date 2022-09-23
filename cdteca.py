@@ -174,7 +174,7 @@ def update_distro(distro):
                     isobase = os.path.basename(isourl)
                     if isourl == isobase:
                         isourl = re.sub('\?(.*)', '', isoconf['url']) + '/' + isobase
-                    subst['@'] = isourl
+                    subst['{iso}'] = isourl
                     isofile = path + '/' + isobase
                     isotemp = isofile + '-partial'
                     isocheck = {
