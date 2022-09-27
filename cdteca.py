@@ -9,10 +9,11 @@ from pyftpdlib.servers import FTPServer
 
 import os.path, getopt, sys, inspect, requests, re, hashlib, jinja2, shutil
 
-version = "0.2dev2"
+version = "0.2dev3"
 confile = os.path.dirname(__file__) + "/config.yaml"
 internal_path = os.path.dirname(__file__)
 verbose = False
+forreal = True
 retains = True
 title = "My Cdteca"
 path = os.path.abspath(internal_path + "/../cdteca-data")
@@ -39,6 +40,7 @@ def usage():
         ['-D', '--daemon', 'Start FTP service'],
         ['-d<name>', '--distro=<name>', 'update a single distro'],
         ['-l', '--list', 'list all supported distros'],
+        ['-t', '--test', 'do not download, only simulate']
         ['-v', '--verbose', 'enable verbose mode']
     ]
     for ms, mx, md in menu:
@@ -197,7 +199,8 @@ def update_distro(distro):
                     else:
                         vprint("Starting download of iso for {} distro. Wait, it can take time...".format(distro))
                         
-                        urlretrieve(isourl, isotemp)
+                        if forreal:
+                            urlretrieve(isourl, isotemp)
                         vprint("Download complete.")
 
                         if 'regex' in sumconf:
@@ -211,13 +214,16 @@ def update_distro(distro):
                             isocheck['group'] = 1
                         if not re.match('^(http|https|ftp)', isocheck['url']):
                             isocheck['url'] = isourl.replace(isobase, isocheck['url'])
-                        if check_sum(isotemp, dconf['method']) == extract_info(isocheck).strip():
-                            vprint("Checksum validated. All is fine!")
-                            os.rename(isotemp, isofile)
-                            iso_clear(isobase, dconf["localregex"])
+                        if forreal:
+                            if check_sum(isotemp, dconf['method']) == extract_info(isocheck).strip():
+                                vprint("Checksum validated. All is fine!")
+                                os.rename(isotemp, isofile)
+                                iso_clear(isobase, dconf["localregex"])
+                            else:
+                                print("Checksum don't match. Aborting...")
+                                os.remove(isotemp)
                         else:
-                            print("Checksum don't match. Aborting...")
-                            os.remove(isotemp)
+                            print("Checksum validation.")                            
     else:
         print("No recipe found for distro {}.".format(distro))
 
@@ -229,8 +235,11 @@ def update_distros():
     for d in distros:
         update_distro(d)
     
-    build_checksums()
-    build_index()
+    if forreal:
+        build_checksums()
+        build_index()
+    else:
+        print("Finished. Files not created. Run without -t or --test option to do it for real!")
 
 def build_checksums():
     """
@@ -323,7 +332,7 @@ def ftpd():
     server.serve_forever()
 
 def main():
-    global verbose, title, path, ftp, distros, checksum_method, html_theme, retains
+    global verbose, title, path, ftp, distros, checksum_method, html_theme, retains, forreal
 
     if os.path.exists(confile):
         with open(confile, 'r') as file:
@@ -354,7 +363,7 @@ def main():
         sys.exit(1)
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "huDd:vl", ["help", "update", "daemon", "distro", "verbose", "list"] )
+        opts, args = getopt.getopt(sys.argv[1:], "huDd:vtl", ["help", "update", "daemon", "distro", "verbose", "test", "list"] )
     except getopt.GetoptError as err:
         print(err)
         usage()
@@ -376,6 +385,8 @@ def main():
             update_distro(a)
         elif o in ('-D', '--daemon'):
             ftpd()
+        elif o in ("-t", '--test'):
+            forreal = False
         elif o in ('-l', '--list'):
             list_distros()
     
