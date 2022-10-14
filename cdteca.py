@@ -9,7 +9,7 @@ from pyftpdlib.servers import FTPServer
 
 import os.path, getopt, sys, inspect, requests, re, hashlib, jinja2, shutil
 
-version = "0.2dev3"
+version = "0.2dev4"
 confile = os.path.dirname(__file__) + "/config.yaml"
 internal_path = os.path.dirname(__file__)
 verbose = False
@@ -40,7 +40,7 @@ def usage():
         ['-D', '--daemon', 'Start FTP service'],
         ['-d<name>', '--distro=<name>', 'update a single distro'],
         ['-l', '--list', 'list all supported distros'],
-        ['-t', '--test', 'do not download, only simulate']
+        ['-t', '--test', 'do not download, only simulate'],
         ['-v', '--verbose', 'enable verbose mode']
     ]
     for ms, mx, md in menu:

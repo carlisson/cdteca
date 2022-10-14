@@ -31,3 +31,4 @@
 0.2.1    2022-09-23: Big fix: error recreating iso dir
 0.2dev2  2022-09-23: Fix ftp configuration
 0.2dev3  2022-09-27: Option -t for simulate downloads
+0.2dev4  2022-10-14: Bug fix in usage option
